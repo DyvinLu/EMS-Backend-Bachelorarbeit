@@ -13,9 +13,10 @@ var dataRoute = express.Router();
  *   
  */
 dataRoute.get(
-    '/mes-donnees',
+    '/compteur1',
     dataController.GetAllData
 );
+
 
 
 

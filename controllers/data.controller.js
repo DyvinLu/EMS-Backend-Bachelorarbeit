@@ -24,52 +24,31 @@ const queryApi = new InfluxDB({url, token}).getQueryApi(org);
 // cette function renvoie un string
 GetAllData = expressAsyncHandler(async (req, res) =>{
     try{
+        let alleZähler = [];
+        let data = [];
         /** To avoid SQL injection, use a string literal for the query. */
-        const fluxQuery = 'from(bucket:"sems") |> range(start: 0) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-01") |> filter(fn: (r) => r.measurement_type == "power")' // |> filter(fn: (r) => r.measurement_type == "power")
-
-        const myQuery = async () => {
+        //const fluxQuery = 'from(bucket:"sems") |> range(start: 0) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-01") |> filter(fn: (r) => r.measurement_type == "power")' // |> filter(fn: (r) => r.measurement_type == "power")
+        const fluxQuery = 'from(bucket:"sems") |> range(start: 2023-09-22T13:00:00.000Z, stop: 2023-09-22T14:00:00.000Z) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-01")  |> filter(fn: (r) => r.measurement_type == "power")  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false) |> yield(name: "mean")';
+            // |> filter(fn: (r) => r.measurement_type == "power")
+        /** Execute a query and receive line table metadata and rows. */    
         for await (const {values, tableMeta} of queryApi.iterateRows(fluxQuery)) {
             const o = tableMeta.toObject(values)
-            console.log(
-            `${o._time} ${o._measurement}: ${o._value}`
-            )
+            /*console.log(
+            `${o._time} ${o._value}`
+            );*/
+            data.push(o);
         }
-        }
 
-        /** Execute a query and receive line table metadata and rows. */
-        myQuery();
-
-
-        /*let csv = []
-        const query =
-        `from(bucket: "sems")
-        |> range(start: -5m)
-        |> filter(fn: (r) => r["_device"] == "shelly-3em-ohs23-01")
-        |> filter(fn: (r) => r["_device"] == "power")
-        |> yield(name: "mean")`
-
-        queryApi.queryRows(query, {
-            next(row,tableMeta){
-                o = tableMeta.toObject(row)
-                csv.push(o)
-                console.log(`${o._time} ${o._neasurement}: ${o._field}=${o._value}`)
-            },
-            error(error) {
-                console.error(error)
-                res.end()
-            },
-            complete() {
-                res.json(csv)
-            },
-        })*/
-
-
+        Alledaten.push(data)
+        
+        return res.status(200).json(data);
     }catch(err){
         return res.status(501).json("something went wront: ERROR = "+err);
     }
 });
 
 
+
 module.exports = {
-    GetAllData
+    GetAllData,
 }
