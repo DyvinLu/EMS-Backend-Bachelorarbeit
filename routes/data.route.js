@@ -13,8 +13,20 @@ var dataRoute = express.Router();
  *   
  */
 dataRoute.get(
-    '/compteur1',
+    '/compteurs',
     dataController.GetAllData
+);
+
+/**
+ * @swagger
+ * /api/data/mes-donnees:
+ * get:
+ *      summary: get all data test
+ *   
+ */
+dataRoute.get(
+    '/compteurs/live',
+    dataController.GetAllDataLive
 );
 
 
