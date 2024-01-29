@@ -33,5 +33,12 @@ dataRoute.get(
     dataController.GetAllDataLive
 );
 
+dataRoute.post(
+    '/compteurs/Shelly3emOhs2305',
+    dataController.Shelly3emOhs2305
+);
+
+
+
 //Exporting the configured router so that it can be used in the main server.js fil
 module.exports = dataRoute;
