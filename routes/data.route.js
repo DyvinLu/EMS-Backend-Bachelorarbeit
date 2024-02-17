@@ -37,6 +37,31 @@ dataRoute.post(
     '/compteurs/Shelly3emOhs2305',
     dataController.Shelly3emOhs2305
 );
+dataRoute.post(
+    '/compteurs/Shelly3emOhs2304',
+    dataController.Shelly3emOhs2304
+);
+dataRoute.post(
+    '/compteurs/Shelly3emOhs2303',
+    dataController.Shelly3emOhs2303
+);
+dataRoute.post(
+    '/compteurs/Shelly3emOhs2302',
+    dataController.Shelly3emOhs2302
+);
+dataRoute.post(
+    '/compteurs/Shelly3emOhs2301',
+    dataController.Shelly3emOhs2301
+);
+dataRoute.post(
+    '/compteurs/XX06',
+    dataController.XX06
+);
+dataRoute.post(
+    '/compteurs/XX07',
+    dataController.XX07
+);
+
 
 
 
