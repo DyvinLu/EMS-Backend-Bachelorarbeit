@@ -54,15 +54,13 @@ dataRoute.post(
     dataController.Shelly3emOhs2301
 );
 dataRoute.post(
-    '/compteurs/XX06',
-    dataController.XX06
+    '/compteurs/EBZDD3',
+    dataController.EBZDD3
 );
 dataRoute.post(
-    '/compteurs/XX07',
-    dataController.XX07
+    '/compteurs/ITRON',
+    dataController.ITRON
 );
-
-
 
 
 //Exporting the configured router so that it can be used in the main server.js fil
