@@ -5,62 +5,96 @@ var express = require('express');
 var dataController = require('../controllers/data.controller');
 var dataRoute = express.Router();
 
-//Swagger Documentation
 /**
  * @swagger
- * /api/data/mes-donnees:
- * get:
- *      summary: get all data test
- *   
+ *  components:
+ *      schemas:
+ *          ShellyModel:
+ *              type: object
+ *              properties:
+ *                  zaehlerName:
+ *                      type: string
+ *                  timeRange:
+ *                      type: number
+ * 
  */
-//Defining Routes
-dataRoute.get(
-    '/compteurs',
-    dataController.GetAllData
-);
 
-//Swagger Documentation
+
 /**
  * @swagger
- * /api/data/mes-donnees:
- * get:
- *      summary: get all data test
+ *  components:
+ *      schemas:
+ *          ShellyResponseModel:
+ *              type: object
+ *              properties:
+ *                  result:
+ *                      type: string
+ *                  table:
+ *                      type: number
+ *                  _start:
+ *                      type: string
+ * 
+ */
+
+
+
+
+/**
+ * @swagger
+ * /api/data/shelly:
+ *  post:
+ *      tags:
+ *          - ShellyModel
+ *      summary: this endpoint is to take information concerning a shellyZaehler.
+ *      consumes:
+ *          application/json
+ *      description: prendre les donnees d'un compteur
+ *      requestBody:
+ *          required: false
+ *          content:
+ *              applicaton/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/ShellyModel'
+ *      responses:
+ *          200:
+ *              description: Les donnees pris avec success
+ *              content:
+ *                  applicaton/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#components/schemas/ShellyResponseModel'
  *   
  */
-//Defining Routes
-dataRoute.get(
-    '/compteurs/live',
-    dataController.GetAllDataLive
+dataRoute.post(
+    '/shelly',
+    dataController.rufShelly
 );
 
+
+/**
+ * @swagger
+ * /api/data/hauptzaehler:
+ *  post:
+ *      tags:
+ *          - ShellyModel
+ *      summary: this endpoint is to take information concerning a hauptzaehler.
+ *      description: prendre les donnees d'un compteur
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              applicaton/json
+ *      responses:
+ *          200:
+ *              description: Les donnees pris avec success
+ *   
+ */
 dataRoute.post(
-    '/compteurs/Shelly3emOhs2305',
-    dataController.Shelly3emOhs2305
+    '/hauptzaehler',
+    dataController.rufHauptzaehler
 );
-dataRoute.post(
-    '/compteurs/Shelly3emOhs2304',
-    dataController.Shelly3emOhs2304
-);
-dataRoute.post(
-    '/compteurs/Shelly3emOhs2303',
-    dataController.Shelly3emOhs2303
-);
-dataRoute.post(
-    '/compteurs/Shelly3emOhs2302',
-    dataController.Shelly3emOhs2302
-);
-dataRoute.post(
-    '/compteurs/Shelly3emOhs2301',
-    dataController.Shelly3emOhs2301
-);
-dataRoute.post(
-    '/compteurs/EBZDD3',
-    dataController.EBZDD3
-);
-dataRoute.post(
-    '/compteurs/ITRON',
-    dataController.ITRON
-);
+
+
 
 
 //Exporting the configured router so that it can be used in the main server.js fil

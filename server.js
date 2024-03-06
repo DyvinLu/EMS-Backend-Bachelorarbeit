@@ -1,15 +1,15 @@
 //This is a Node.js application using the Express framework to create a server.
 
 // Importing Required Modules
-const express = require("express");
-const cors = require('cors');
+const express = require("express"); 
+const cors = require('cors'); // cela permet la connection du frontend au backend
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 const dotenv = require('dotenv');
 dotenv.config();
 
 //Setting Up Express
-const app = express();
+const app = express(); // Initialization de l'application
 
 //Routing
 const dataRouter = require('./routes/data.route');
@@ -46,6 +46,7 @@ const options = {
     ],
     
 };
+
 const swaggerDocs = swaggerJSDoc(options);
 
 //CORS Configuration
@@ -54,16 +55,17 @@ var corsOptions = {
     optionsSuccessStatus: 200,
     methods: "GET, POST, PUT, PATCH, DELETE"
 };
-app.use(cors(corsOptions));
+
+app.use(cors(corsOptions)); // ajout du cors a' l'application
 
 //Middleware Setup:Configures middleware to parse incoming JSON and URL-encoded data
-app.use(express.json());
+app.use(express.json()); // ajout d'express json
 app.use(express.urlencoded({extended:false}));
 
 
 //Routes Setup
-app.use("/api/api-documentation",swaggerUI.serve, swaggerUI.setup(swaggerDocs));
-app.use('/api/data', dataRouter);
+app.use("/api/api-documentation/",swaggerUI.serve, swaggerUI.setup(swaggerDocs)); // ceci permet d'ouvrir l'application dans le swagger
+app.use('/api/data', dataRouter); // permet d'appeler les routes
 
 //Server Configuration
 const port = process.env.PORT || 5000;
