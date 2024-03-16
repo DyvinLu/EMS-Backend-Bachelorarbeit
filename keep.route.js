@@ -14,18 +14,7 @@ dataRoute.get(
 );
 
 //Swagger Documentation
-/**
- * @swagger
- * /api/data/mes-donnees:
- * get:
- *      summary: get all data test
- *   
- */
-//Defining Routes
-dataRoute.get(
-    '/compteurs/live',
-    dataController.GetAllDataLive
-);
+
 
 
 

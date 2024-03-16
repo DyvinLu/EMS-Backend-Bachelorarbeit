@@ -19,7 +19,7 @@ const options = {
     definition: {
       openapi: '3.0.0',
       info: {
-        title: 'Ludy API',
+        title: 'IDIAL-EMS-API',
         version: '1.0.0'
       },
       servers: [
