@@ -74,4 +74,4 @@ app.listen(port,async ()=>{
 });
 
 //Exporting the Express App to be used in other parts of the application
-module.exports = app;
+module.exports = app

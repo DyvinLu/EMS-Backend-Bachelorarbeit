@@ -1,28 +1,10 @@
-//This script is the controller (data.controller.js) for handling data-related operations in the Node.js application
-
-//Importing Required Modules
-//the express-async-handler module to handle asynchronous errors
-//and the InfluxDB module for interacting with InfluxDB
 var expressAsyncHandler = require('express-async-handler');
 const {InfluxDB} = require('@influxdata/influxdb-client');
 
-//const YOUR_ORG = 'idial'; // we need email
-//const YOUR_BUCKET = 'sems';
-//const client = new InfluxDB({url: 'http://sems.vms.idial.fh:8086',token:token});
-//const queryApi = client.getQueryApi(org);
-
-// Environment variables
-// Retrieves environment variables for the InfluxDB connection details
 const url = process.env.INFLUX_URL || 'http://sems.vms.idial.fh:8086';
 const token = process.env.INFLUX_TOKEN || 'sems_token';
 const org = process.env.INFLUX_ORG || 'idial';
 
-/**
- * Instantiate the InfluxDB client
- * with a configuration object.
- *
- * Get a query client configured for your org.
- **/
 const queryApi = new InfluxDB({url, token}).getQueryApi(org);
 
 
@@ -30,13 +12,15 @@ const queryApi = new InfluxDB({url, token}).getQueryApi(org);
 rufHauptzaehler = expressAsyncHandler(async (req, res) =>{
     try{
         const body = req.body;
-        const timeRange = body.timeRange * 60; // 1h = 60 minutes
+        //const timeRange = body.timeRange * 60; // 1h = 60 minutes
         const haupZaehlerName = body.zaehlerName;
+        var dateStart = body.dateStart;
+        var dateEnd = body.dateEnd;
 
         let data = [];
-        var dateEnd = new Date(Date.now());
-        const MS_PER_MINUTE = 60000;
-        var dateStart = new Date(dateEnd- timeRange * MS_PER_MINUTE);
+        //var dateEnd = new Date(Date.now());
+        //const MS_PER_MINUTE = 60000;
+        //var dateStart = new Date(dateEnd- timeRange * MS_PER_MINUTE);
         dateStart = dateStart.toISOString();
         dateEnd = dateEnd.toISOString();
 
@@ -64,13 +48,15 @@ rufShelly = expressAsyncHandler(async (req, res) =>{
         //console.log("req",req.body)
 
         const body = req.body;
-        const timeRange = body.timeRange * 60; // 1h = 60 minutes
+        //const timeRange = body.timeRange * 60; // 1h = 60 minutes
         const shellyName = body.zaehlerName;
+        var dateStart = new Date(body.dateStart);
+        var dateEnd = new Date(body.dateEnd); // ceci peut etre ll'instant T ou' on se trouve
 
         let data = [];
-        var dateEnd = new Date(Date.now());
-        const MS_PER_MINUTE = 60000;
-        var dateStart = new Date(dateEnd- timeRange * MS_PER_MINUTE);
+        //var dateEnd = new Date(Date.now());
+        //const MS_PER_MINUTE = 60000;
+        //var dateStart = new Date(dateEnd- timeRange * MS_PER_MINUTE);
         dateStart = dateStart.toISOString();
         dateEnd = dateEnd.toISOString();
 
@@ -123,7 +109,7 @@ GetAllDataLive = expressAsyncHandler(async (req, res) =>{
         /* Zähler 1 */
         /** To avoid SQL injection, use a string literal for the query. */
         //const fluxQuery = 'from(bucket:"sems") |> range(start: 0) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-01") |> filter(fn: (r) => r.measurement_type == "power")' // |> filter(fn: (r) => r.measurement_type == "power")
-        const shelly1 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-01")  |> filter(fn: (r) => r.measurement_type == "power") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
+        const shelly1 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-01")  |> filter(fn: (r) => r.measurement_type == "total") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
         /** Execute a query and receive line table metadata and rows. */    
         for await (const {values, tableMeta} of queryApi.iterateRows(shelly1)) {
             const o = tableMeta.toObject(values)
@@ -135,7 +121,7 @@ GetAllDataLive = expressAsyncHandler(async (req, res) =>{
 
         /* Zähler 2 */
         /** To avoid SQL injection, use a string literal for the query. */
-        const shelly2 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-02")  |> filter(fn: (r) => r.measurement_type == "power") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
+        const shelly2 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-02")  |> filter(fn: (r) => r.measurement_type == "total") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
         /** Execute a query and receive line table metadata and rows. */    
         for await (const {values, tableMeta} of queryApi.iterateRows(shelly2)) {
             const o = tableMeta.toObject(values)
@@ -144,7 +130,7 @@ GetAllDataLive = expressAsyncHandler(async (req, res) =>{
 
         /* Zähler 3 */
         /** To avoid SQL injection, use a string literal for the query. */
-        const shelly3 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-03")  |> filter(fn: (r) => r.measurement_type == "power") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
+        const shelly3 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-03")  |> filter(fn: (r) => r.measurement_type == "total") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
         /** Execute a query and receive line table metadata and rows. */    
         for await (const {values, tableMeta} of queryApi.iterateRows(shelly3)) {
             const o = tableMeta.toObject(values)
@@ -153,7 +139,7 @@ GetAllDataLive = expressAsyncHandler(async (req, res) =>{
 
         /* Zähler 4 */
         /** To avoid SQL injection, use a string literal for the query. */
-        const shelly4 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-04")  |> filter(fn: (r) => r.measurement_type == "power") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
+        const shelly4 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-04")  |> filter(fn: (r) => r.measurement_type == "total") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
         /** Execute a query and receive line table metadata and rows. */    
         for await (const {values, tableMeta} of queryApi.iterateRows(shelly4)) {
             const o = tableMeta.toObject(values)
@@ -162,7 +148,7 @@ GetAllDataLive = expressAsyncHandler(async (req, res) =>{
 
         /* Zähler 5 */
         /** To avoid SQL injection, use a string literal for the query. */
-        const shelly5 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-05")  |> filter(fn: (r) => r.measurement_type == "power") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
+        const shelly5 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == "shelly-3em-ohs23-05")  |> filter(fn: (r) => r.measurement_type == "total") |> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
         /** Execute a query and receive line table metadata and rows. */    
         for await (const {values, tableMeta} of queryApi.iterateRows(shelly5)) {
             const o = tableMeta.toObject(values)
