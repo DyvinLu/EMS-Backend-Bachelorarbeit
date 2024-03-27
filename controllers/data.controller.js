@@ -14,8 +14,8 @@ rufHauptzaehler = expressAsyncHandler(async (req, res) =>{
         const body = req.body;
         //const timeRange = body.timeRange * 60; // 1h = 60 minutes
         const haupZaehlerName = body.zaehlerName;
-        var dateStart = body.dateStart;
-        var dateEnd = body.dateEnd;
+        var dateStart = new Date(body.dateStart);
+        var dateEnd = new Date(body.dateEnd); // ceci peut etre ll'instant T ou' on se trouve
 
         let data = [];
         //var dateEnd = new Date(Date.now());
