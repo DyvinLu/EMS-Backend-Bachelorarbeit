@@ -86,7 +86,7 @@ GetAllDataLive = expressAsyncHandler(async (req, res) =>{
 
         /* Hauptzähler 1 */
 
-        const Hauptzaehler1 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer") |> filter(fn: (r) => r["GId"] == "EBZDD3")  |> filter(fn: (r) => r["_field"] == "total") |> filter(fn: (r) => r["device"] == "XX-06") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
+        const Hauptzaehler1 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r["_measurement"] == "mqtt_consumer") |> filter(fn: (r) => r["GId"] == "EBZDD3")  |> filter(fn: (r) => r["_field"] == "total") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
         for await (const {values, tableMeta} of queryApi.iterateRows(Hauptzaehler1)) {
             const o = tableMeta.toObject(values)
             /*console.log(
@@ -97,7 +97,7 @@ GetAllDataLive = expressAsyncHandler(async (req, res) =>{
 
         /* Hauptzähler 2 */
 
-        const Hauptzaehler2 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r["GId"] == "ITRON_") |> filter(fn: (r) => r["_field"] == "total") |> filter(fn: (r) => r["device"] == "XX-07") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
+        const Hauptzaehler2 = `from(bucket:"sems") |> range(start: ${dateStart}, stop: ${dateEnd}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r["GId"] == "ITRON_") |> filter(fn: (r) => r["_field"] == "total") |> aggregateWindow(every: 15m, fn: last, createEmpty: false) |> yield(name: "last")`;
         for await (const {values, tableMeta} of queryApi.iterateRows(Hauptzaehler2)) {
             const o = tableMeta.toObject(values)
             /*console.log(
