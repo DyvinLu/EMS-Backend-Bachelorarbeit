@@ -16,9 +16,8 @@ var dataRoute = express.Router();
  *                      type: string
  *                  timeRange:
  *                      type: number
- * 
+ *
  */
-
 
 /**
  * @swagger
@@ -53,24 +52,18 @@ var dataRoute = express.Router();
  *                      type: string
  *                  topic:
  *                      type: string
- * 
+ *
  */
-
 
 /**
  * @swagger
  * /api/data/mes-donnees:
  * get:
  *      summary: get all data test
- *   
+ *
  */
 //Defining Routes
-dataRoute.get(
-    '/compteurs/live',
-    dataController.GetAllDataLive
-);
-
-
+dataRoute.get('/compteurs/live', dataController.GetAllDataLive);
 
 /**
  * @swagger
@@ -97,13 +90,9 @@ dataRoute.get(
  *                          type: array
  *                          items:
  *                              $ref: '#components/schemas/ShellyResponseModel'
- *   
+ *
  */
-dataRoute.post(
-    '/shelly',
-    dataController.rufShelly
-);
-
+dataRoute.post('/shelly', dataController.rufShelly);
 
 /**
  * @swagger
@@ -120,15 +109,9 @@ dataRoute.post(
  *      responses:
  *          200:
  *              description: Les donnees pris avec success
- *   
+ *
  */
-dataRoute.post(
-    '/hauptzaehler',
-    dataController.rufHauptzaehler
-);
-
-
-
+dataRoute.post('/hauptzaehler', dataController.rufHauptzaehler);
 
 //Exporting the configured router so that it can be used in the main server.js fil
 module.exports = dataRoute;
