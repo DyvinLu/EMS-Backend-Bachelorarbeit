@@ -5,11 +5,8 @@ var express = require('express');
 var dataController = require('../controllers/data.controller');
 var dataRoute = express.Router();
 
-
-dataRoute.get('/compteurs/live', dataController.GetAllDataLive);
-
+dataRoute.get('/compteurs/live', dataController.getAllDataLive);
 dataRoute.post('/shelly', dataController.rufShelly);
-
 dataRoute.post('/hauptzaehler', dataController.rufHauptzaehler);
 
 //Exporting the configured router so that it can be used in the main server.js fil
