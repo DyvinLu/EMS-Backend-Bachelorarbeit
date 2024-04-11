@@ -5,6 +5,7 @@ var express = require('express');
 var dataController = require('../controllers/data.controller');
 var dataRoute = express.Router();
 
+
 dataRoute.get('/compteurs/live', dataController.GetAllDataLive);
 
 dataRoute.post('/shelly', dataController.rufShelly);
