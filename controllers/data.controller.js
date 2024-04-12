@@ -1,12 +1,15 @@
 var expressAsyncHandler = require('express-async-handler');
 const { InfluxDB } = require('@influxdata/influxdb-client');
+const moment = require('moment');
+
 
 const url = process.env.INFLUX_URL || 'http://sems.vms.idial.fh:8086';
 const token = process.env.INFLUX_TOKEN || 'sems_token';
 const org = process.env.INFLUX_ORG || 'idial';
 const standardInterval = '15m';
 
-const queryApi = new InfluxDB({ url, token }).getQueryApi(org);
+const queryApi = new InfluxDB({ url, token }).
+getQueryApi(org);
 const hauptzaehlerNamen = ['"ITRON"', '"EBZDD3"'];
 const shellyNamen = [
   '"shelly-3em-ohs23-01"',
@@ -78,9 +81,8 @@ const getAllDataLive = expressAsyncHandler(async (req, res) => {
     const MS_PER_MINUTE = 60000;
     const data = [];
     const end = new Date(Date.now()).toISOString();
-    const start = new Date(
-      new Date(Date.now()).getTime() - 15 * MS_PER_MINUTE
-    ).toISOString();
+    const start = new Date(moment().startOf('day').valueOf()).toISOString();
+
     const interval = standardInterval; // Standardmäßig 15 Minuten, kann angepasst werden
 
     for (const name of hauptzaehlerNamen) {
