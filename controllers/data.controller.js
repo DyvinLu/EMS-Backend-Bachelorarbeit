@@ -6,7 +6,7 @@ const moment = require('moment');
 const url = process.env.INFLUX_URL || 'http://sems.vms.idial.fh:8086';
 const token = process.env.INFLUX_TOKEN || 'sems_token';
 const org = process.env.INFLUX_ORG || 'idial';
-const standardInterval = '15m';
+const standardInterval = '15m';// Standardmäßig 15 Minuten, kann angepasst werden
 
 const queryApi = new InfluxDB({ url, token }).
 getQueryApi(org);
@@ -44,10 +44,9 @@ const rufHauptzaehler = expressAsyncHandler(async (req, res) => {
   try {
     const { zaehlerName, dateStart, dateEnd, timeInterval } = req.body;
     const start = new Date(dateStart).toISOString();
-    const end = new Date(dateEnd).toISOString(); // ceci peut etre ll'instant T ou' on se trouve
-    const interval = timeInterval || standardInterval; // Standardmäßig 15 Minuten, kann angepasst werden
+    const end = new Date(dateEnd).toISOString(); 
+    const interval = timeInterval || standardInterval;
 
-    /** To avoid SQL injection, use a string literal for the query. */
     const query = getQueryForHauptzaehler(zaehlerName, start, end, interval);
     const data = await queryDatabase(query);
 
@@ -59,14 +58,12 @@ const rufHauptzaehler = expressAsyncHandler(async (req, res) => {
 
 const rufShelly = expressAsyncHandler(async (req, res) => {
   try {
-    //console.log("req",req.body)
 
     const { zaehlerName, dateStart, dateEnd, timeInterval } = req.body;
     const start = new Date(dateStart).toISOString();
     const end = new Date(dateEnd).toISOString();
-    const interval = timeInterval || standardInterval; // Standardmäßig 15 Minuten, kann angepasst werden
+    const interval = timeInterval || standardInterval;
 
-    /** To avoid SQL injection, use a string literal for the query. */
     const query = getQueryForShelly(zaehlerName, start, end, interval);
     const data = await queryDatabase(query);
 
@@ -83,7 +80,7 @@ const getAllDataLive = expressAsyncHandler(async (req, res) => {
     const end = new Date(Date.now()).toISOString();
     const start = new Date(moment().startOf('day').valueOf()).toISOString();
 
-    const interval = standardInterval; // Standardmäßig 15 Minuten, kann angepasst werden
+    const interval = standardInterval; 
 
     for (const name of hauptzaehlerNamen) {
       const tmp = await queryDatabase(
@@ -105,7 +102,8 @@ const getAllDataLive = expressAsyncHandler(async (req, res) => {
   }
 });
 
-//Exporting Functions
+
+
 module.exports = {
   rufShelly,
   rufHauptzaehler,
