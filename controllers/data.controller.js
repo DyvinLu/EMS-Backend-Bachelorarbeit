@@ -3,10 +3,13 @@ const { InfluxDB } = require('@influxdata/influxdb-client');
 const moment = require('moment');
 
 
-const url = process.env.INFLUX_URL || 'http://sems.vms.idial.fh:8086';
-const token = process.env.INFLUX_TOKEN || 'sems_token';
-const org = process.env.INFLUX_ORG || 'idial';
+const url = process.env.INFLUX_URL;
+const token = process.env.INFLUX_TOKEN;
+const org = process.env.INFLUX_ORG;
 const standardInterval = '15m';// Standardmäßig 15 Minuten, kann angepasst werden
+if(!url || !token || !org){
+  throw 'InfluxDB credentials müssen bereitgestellt werden'
+};
 
 const queryApi = new InfluxDB({ url, token }).
 getQueryApi(org);
@@ -26,7 +29,7 @@ const getQueryForShelly = (name, start, end, interval) => {
   return `from(bucket:"sems") |> range(start: ${start}, stop: ${end}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == ${name})  |> filter(fn: (r) => r["measurement_type"] == "total")|> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: ${interval}, fn: last, createEmpty: false) |> yield(name: "last")`;
 };
 
-const queryDatabase = async (query) => {
+const quernyDatabase = async (query) => {
   const data = [];
   try {
     for await (const { values, tableMeta } of queryApi.iterateRows(query)) {
