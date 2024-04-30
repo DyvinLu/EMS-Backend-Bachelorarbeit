@@ -29,7 +29,7 @@ const getQueryForShelly = (name, start, end, interval) => {
   return `from(bucket:"sems") |> range(start: ${start}, stop: ${end}) |> filter(fn: (r) => r._measurement == "mqtt_consumer") |> filter(fn: (r) => r.device == ${name})  |> filter(fn: (r) => r["measurement_type"] == "total")|> filter(fn: (r) => r["phase"] == "0" or r["phase"] == "1" or r["phase"] == "2") |> aggregateWindow(every: ${interval}, fn: last, createEmpty: false) |> yield(name: "last")`;
 };
 
-const quernyDatabase = async (query) => {
+const queryDatabase = async (query) => {
   const data = [];
   try {
     for await (const { values, tableMeta } of queryApi.iterateRows(query)) {
@@ -55,6 +55,7 @@ const rufHauptzaehler = expressAsyncHandler(async (req, res) => {
 
     return res.status(200).json(data);
   } catch (err) {
+    console.error(err);
     return res.status(501).json('something went wront: ERROR = ' + err);
   }
 });
@@ -72,6 +73,7 @@ const rufShelly = expressAsyncHandler(async (req, res) => {
 
     return res.status(200).json(data);
   } catch (err) {
+    console.error(err);
     return res.status(501).json('something went wront: ERROR = ' + err);
   }
 });
